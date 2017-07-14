@@ -5,10 +5,12 @@
 
 ```
 make
-./main
+bash generator.sh
 ```
 
 ```
 make
-bash generator.sh
+bash generator.sh -n 10 > tmp
+cat tmp | ocaml -w -a
+cat tmp | ./your_interpreter
 ```
