@@ -150,24 +150,30 @@ void toplevel(){
 }
 
 const int ARGMODE_COMPLEXITY = 0;
+const int ARGMODE_SEED = 1;
 
 void show_usage( char *filename ){
   cout << "Usage: " << filename << " [OPTION]" << endl;
   cout << "Options:" << endl;
   cout << "-h, --help: show help" << endl;
   cout << "-c COMP: set complexity" << endl;
+  cout << "-s SEED: set seed" << endl;
 }
 
 int main( int argc, char **argv ){
 
-  mt.seed( clock() );
 
+  int seed = clock();
+  
   int arg_mode = -1;
   for( int i = 1; i < argc; i++ ){
     string s = argv[i];
     if( arg_mode != -1 ){
       if( arg_mode == ARGMODE_COMPLEXITY ){
         cnt = stoi(s);
+      }
+      if( arg_mode == ARGMODE_SEED ){
+        seed = stoi(s);
       }
       arg_mode = -1;
     }
@@ -178,7 +184,12 @@ int main( int argc, char **argv ){
     if( s == "-c" ){
       arg_mode = ARGMODE_COMPLEXITY;
     }
+    if( s == "-s" ){
+      arg_mode = ARGMODE_SEED;
+    }
   }
+
+  mt.seed( seed );
   
   toplevel();
   
