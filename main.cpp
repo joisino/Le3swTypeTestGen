@@ -4,7 +4,7 @@ using namespace std;
 
 mt19937 mt;
 
-int cnt = 0;
+int cnt = 5;
 
 void expr();
 
@@ -28,9 +28,9 @@ void funexpr(){
 }
 
 void aexpr(){
-  cnt++;
+  cnt--;
   int a = mt() % 16;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = mt() % 12;
   }
   if( a < 9 ){
@@ -54,7 +54,7 @@ void aexpr(){
 
 void appexpr(){
   int a = mt() % 5;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = 1;
   }
   if( a == 0 ){
@@ -68,7 +68,7 @@ void appexpr(){
 
 void pexpr(){
   int a = mt() % 2;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = 1;
   }
   if( a == 0 ){
@@ -82,7 +82,7 @@ void pexpr(){
 
 void ltexpr(){
   int a = mt() % 2;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = 1;
   }
   if( a == 0 ){
@@ -110,7 +110,7 @@ void letrecexpr(){
 
 void expr(){
   int a = mt() % 5;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = 2;
   }
   if( a == 0 ){
@@ -136,7 +136,7 @@ void reclet(){
 
 void toplevel(){
   int a = mt() % 3;
-  if( cnt > 5 ){
+  if( cnt < 0 ){
     a = 0;
   }
   if( a == 0 ){
@@ -149,9 +149,36 @@ void toplevel(){
   }
 }
 
-int main(){
+const int ARGMODE_COMPLEXITY = 0;
+
+void show_usage( char *filename ){
+  cout << "Usage: " << filename << " [OPTION]" << endl;
+  cout << "Options:" << endl;
+  cout << "-h, --help: show help" << endl;
+  cout << "-c COMP: set complexity" << endl;
+}
+
+int main( int argc, char **argv ){
 
   mt.seed( clock() );
+
+  int arg_mode = -1;
+  for( int i = 1; i < argc; i++ ){
+    string s = argv[i];
+    if( arg_mode != -1 ){
+      if( arg_mode == ARGMODE_COMPLEXITY ){
+        cnt = stoi(s);
+      }
+      arg_mode = -1;
+    }
+    if( s == "-h" || s == "--help" ){
+      show_usage( argv[0] );
+      return 0;
+    }
+    if( s == "-c" ){
+      arg_mode = ARGMODE_COMPLEXITY;
+    }
+  }
   
   toplevel();
   
