@@ -4,7 +4,7 @@ using namespace std;
 
 mt19937 mt;
 
-int cnt = 5;
+int cnt = 3;
 
 void expr();
 
