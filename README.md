@@ -8,3 +8,7 @@ make
 ./main
 ```
 
+```
+make
+bash generator.sh
+```
