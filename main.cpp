@@ -4,6 +4,8 @@ using namespace std;
 
 mt19937 mt;
 
+int level = 4;
+
 int cnt = 3;
 
 void expr();
@@ -29,10 +31,7 @@ void funexpr(){
 
 void aexpr(){
   cnt--;
-  int a = mt() % 16;
-  if( cnt < 0 ){
-    a = mt() % 12;
-  }
+  int a = mt() % 13;
   if( a < 9 ){
     cout << a+1;
   } else if( a == 9 ){
@@ -45,19 +44,25 @@ void aexpr(){
     cout << "( ";
     expr();
     cout << " )";
-  } else if( a == 13 ){
-    ifexpr();
-  } else if( a == 14 ){
-    funexpr();
   }
 }
 
 void appexpr(){
-  int a = mt() % 5;
+  vector<int> cand(0);
+  if( level >= 0 ){
+    cand.push_back( 1 );
+    cand.push_back( 1 );
+    cand.push_back( 1 );
+    cand.push_back( 1 );
+  }
+  if( level >= 3 ){
+    cand.push_back( 0 );
+  }
+  int a = cand[mt() % (int)(cand.size())];
   if( cnt < 0 ){
     a = 1;
   }
-  if( a == 0 ){
+ if( a == 0 ){
     appexpr();
     cout << " ";
     aexpr();
@@ -109,16 +114,36 @@ void letrecexpr(){
 }
 
 void expr(){
-  int a = mt() % 5;
+  vector<int> cand(0);
+  if( level >= 0 ){
+    cand.push_back( 0 );
+    cand.push_back( 0 );
+    cand.push_back( 0 );
+    cand.push_back( 3 );
+  }
+  if( level >= 2 ){
+    cand.push_back( 1 );
+  }
+  if( level >= 3 ){
+    cand.push_back( 4 );
+  }
+  if( level >= 4 ){
+    cand.push_back( 2 );
+  }
+  int a = cand[mt() % (int)(cand.size())];
   if( cnt < 0 ){
-    a = 2;
+    a = 0;
   }
   if( a == 0 ){
-    letexpr();
+    ltexpr();    
   } else if( a == 1 ){
+    letexpr();
+  } else if( a == 2 ){
     letrecexpr();
-  } else {
-    ltexpr();
+  } else if( a == 3 ){
+    ifexpr();
+  } else if( a == 4 ){
+    funexpr();
   }
 }
 
@@ -135,7 +160,17 @@ void reclet(){
 }
 
 void toplevel(){
-  int a = mt() % 3;
+  vector<int> cand(0);
+  if( level >= 0 ){
+    cand.push_back( 0 );
+  }
+  if( level >= 2 ){
+    cand.push_back( 1 );
+  }
+  if( level >= 4 ){
+    cand.push_back( 2 );
+  }
+  int a = cand[mt() % (int)(cand.size())];
   if( cnt < 0 ){
     a = 0;
   }
@@ -149,8 +184,12 @@ void toplevel(){
   }
 }
 
-const int ARGMODE_COMPLEXITY = 0;
-const int ARGMODE_SEED = 1;
+enum ARGMODE {
+  NONE,
+  COMPLEXITY,
+  SEED,
+  LEVEL
+};
 
 void show_usage( char *filename ){
   cout << "Usage: " << filename << " [OPTION]" << endl;
@@ -158,34 +197,40 @@ void show_usage( char *filename ){
   cout << "-h, --help: show help" << endl;
   cout << "-c COMP: set complexity" << endl;
   cout << "-s SEED: set seed" << endl;
+  cout << "-l LEVEL: set level" << endl;
 }
 
 int main( int argc, char **argv ){
 
-
   int seed = clock();
   
-  int arg_mode = -1;
+  int arg_mode = NONE;
   for( int i = 1; i < argc; i++ ){
     string s = argv[i];
-    if( arg_mode != -1 ){
-      if( arg_mode == ARGMODE_COMPLEXITY ){
+    if( arg_mode != NONE ){
+      if( arg_mode == COMPLEXITY ){
         cnt = stoi(s);
       }
-      if( arg_mode == ARGMODE_SEED ){
+      if( arg_mode == SEED ){
         seed = stoi(s);
       }
-      arg_mode = -1;
+      if( arg_mode == LEVEL ){
+        level = stoi(s);
+      }
+      arg_mode = NONE;
     }
     if( s == "-h" || s == "--help" ){
       show_usage( argv[0] );
       return 0;
     }
     if( s == "-c" ){
-      arg_mode = ARGMODE_COMPLEXITY;
+      arg_mode = COMPLEXITY;
     }
     if( s == "-s" ){
-      arg_mode = ARGMODE_SEED;
+      arg_mode = SEED;
+    }
+    if( s == "-l" ){
+      arg_mode = LEVEL;
     }
   }
 
