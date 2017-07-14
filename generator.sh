@@ -1,4 +1,9 @@
 num=100
+
+if [ $# -eq 1 ]; then
+    num=$1
+fi
+
 while [ $num -gt 0 ]
 do
     testcase=`./main`
